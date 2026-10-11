@@ -67,9 +67,10 @@ async function searchWorld() {
       .openPopup();
 
     document.getElementById('cityName').textContent =
-      String(place.name || query);
+      String(place.display_name || place.name || query).split(',')[0];
     document.getElementById('cityCountry').textContent =
-      'Score réel indisponible — données à vérifier';
+      String(place.display_name || 'Pays inconnu').split(',').slice(1).join(',').trim()
+  + ' — Score réel indisponible';
     document.getElementById('score').textContent = '—';
   } catch (error) {
     alert('La recherche a échoué. Vérifie ta connexion puis réessaie.');
