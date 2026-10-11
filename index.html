@@ -33,5 +33,49 @@ function color(s){return s<3?'#38c982':s<5?'#e6b94f':s<7?'#f08b42':'#ef5c65'}
 function selectCity(key){const c=cities[key];if(!c){alert('Ville non présente dans cette maquette. Pour l’instant, essayez Paris, Alger, Tokyo, New York ou Marseille.');return}document.getElementById('cityName').textContent=c.name;document.getElementById('cityCountry').textContent=c.country+' · exemple de démonstration';document.getElementById('score').innerHTML=c.score.toLocaleString('fr-FR',{minimumFractionDigits:1,maximumFractionDigits:1})+' <small>/ 10</small>';document.getElementById('bar').style.width=(c.score*10)+'%';document.getElementById('bar').style.background=color(c.score);document.getElementById('scoreNote').textContent='Note fictive — aucun jugement réel sur la ville.';map.setView([c.lat,c.lon],10);markers[key].openPopup()}
 Object.entries(cities).forEach(([key,c])=>{markers[key]=L.circleMarker([c.lat,c.lon],{radius:8,color:color(c.score),fillColor:color(c.score),fillOpacity:.9,weight:2}).addTo(map).bindPopup('<strong>'+c.name+'</strong><br>Note de démonstration : '+c.score.toLocaleString('fr-FR')+'/10<br><em>Donnée fictive</em>');markers[key].on('click',()=>selectCity(key));});
 function search(){const value=document.getElementById('search').value.trim().toLocaleLowerCase('fr');if(!value)return;const key=Object.keys(cities).find(k=>k===value||cities[k].name.toLocaleLowerCase('fr')===value);if(key)selectCity(key);else alert('Ville non présente dans cette première maquette. Nous ajouterons ensuite la recherche mondiale.');}
-document.getElementById('go').addEventListener('click',search);document.getElementById('search').addEventListener('keydown',e=>{if(e.key==='Enter')search()});
+document.getElementById('go').addEventListener('click',searchWorld);document.getElementById('search').addEventListener('keydown',e=>{if(e.key==='Enter')searchworld()});
+ 
+async function searchWorld() {
+  const input = document.getElementById('search');
+  const query = input.value.trim();
+  if (!query) return;
+
+  const go = document.getElementById('go');
+  if (go) go.textContent = 'Recherche...';
+
+  try {
+    const url = 'https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q=' + encodeURIComponent(query);
+    const response = await fetch(url);
+    if (!response.ok) throw new Error('Recherche indisponible');
+
+    const results = await response.json();
+    if (!results.length) {
+      alert('Ville introuvable. Essaie avec le nom de la ville et du pays.');
+      return;
+    }
+
+    const place = results[0];
+    const lat = Number(place.lat);
+    const lon = Number(place.lon);
+
+    map.setView([lat, lon], 11);
+
+    if (window.worldMarker) map.removeLayer(window.worldMarker);
+    window.worldMarker = L.marker([lat, lon]).addTo(map)
+      .bindPopup('<strong>' + String(place.display_name).replace(/[&<>"]/g, '') +
+      '</strong><br>Score réel indisponible : données fiables non connectées.')
+      .openPopup();
+
+    document.getElementById('cityName').textContent =
+      String(place.name || query);
+    document.getElementById('cityCountry').textContent =
+      'Score réel indisponible — données à vérifier';
+    document.getElementById('score').textContent = '—';
+  } catch (error) {
+    alert('La recherche a échoué. Vérifie ta connexion puis réessaie.');
+  } finally {
+    if (go) go.textContent = 'Rechercher';
+  }
+}
+
 </script></body></html>
