@@ -35,6 +35,7 @@ Object.entries(cities).forEach(([key,c])=>{markers[key]=L.circleMarker([c.lat,c.
 function search(){const value=document.getElementById('search').value.trim().toLocaleLowerCase('fr');if(!value)return;const key=Object.keys(cities).find(k=>k===value||cities[k].name.toLocaleLowerCase('fr')===value);if(key)selectCity(key);else alert('Ville non présente dans cette première maquette. Nous ajouterons ensuite la recherche mondiale.');}
 document.getElementById('go').addEventListener('click',searchWorld);document.getElementById('search').addEventListener('keydown',e=>{if(e.key==='Enter')searchworld()});
  
+
 async function searchWorld() {
   const input = document.getElementById('search');
   const query = input.value.trim();
@@ -44,7 +45,10 @@ async function searchWorld() {
   if (go) go.textContent = 'Recherche...';
 
   try {
-    const url = 'https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q=' + encodeURIComponent(query);
+    const url =
+      'https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&limit=1&q=' +
+      encodeURIComponent(query);
+
     const response = await fetch(url);
     if (!response.ok) throw new Error('Recherche indisponible');
 
@@ -57,26 +61,110 @@ async function searchWorld() {
     const place = results[0];
     const lat = Number(place.lat);
     const lon = Number(place.lon);
+    const address = place.address || {};
+    const cityName = String(
+      address.city || address.town || address.village ||
+      address.municipality || place.name || query
+    );
 
     map.setView([lat, lon], 11);
 
     if (window.worldMarker) map.removeLayer(window.worldMarker);
-    window.worldMarker = L.marker([lat, lon]).addTo(map)
-      .bindPopup('<strong>' + String(place.display_name).replace(/[&<>"]/g, '') +
-      '</strong><br>Score réel indisponible : données fiables non connectées.')
+
+    const safeName = String(place.display_name || cityName).replace(
+      /[&<>"']/g,
+      character => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+      })[character]
+    );
+
+    let popup = '<strong>' + safeName + '</strong>';
+    let status = 'Score de sécurité non calculé';
+
+    if (address.country_code === 'fr') {
+      popup += '<br><br>Recherche des données officielles 2025...';
+
+      const geoResponse = await fetch(
+        'https://api-adresse.data.gouv.fr/reverse/?lon=' +
+        lon + '&lat=' + lat
+      );
+      if (!geoResponse.ok) throw new Error('Localisation indisponible');
+
+      const geoData = await geoResponse.json();
+      const code = geoData.features?.[0]?.properties?.citycode;
+
+      if (!code) {
+        popup = '<strong>' + safeName +
+          '</strong><br>Code officiel de la commune introuvable.';
+      } else {
+        if (!window.safeAtlasCrimeData) {
+          const dataResponse = await fetch(
+            './safeatlas-criminalite-france-2025-compact.json'
+          );
+          if (!dataResponse.ok) {
+            throw new Error('Fichier de données introuvable');
+          }
+          window.safeAtlasCrimeData = await dataResponse.json();
+        }
+
+        const data = window.safeAtlasCrimeData;
+        const commune = data.communes[code];
+
+        if (!commune) {
+          popup = '<strong>' + safeName +
+            '</strong><br>Aucune donnée communale disponible dans le fichier.';
+        } else {
+          popup = '<strong>' + safeName + '</strong>';
+          popup += '<br><br><strong>Données enregistrées en 2025</strong>';
+
+          data.indicateurs.forEach((label, index) => {
+            const item = commune[3][index];
+            const count = item[0];
+            const rate = item[1];
+
+            popup += '<br>' + label + ' : ' +
+              (count === null ? 'Donnée non diffusée' :
+                count + ' faits');
+
+            if (rate !== null) {
+              popup += ' (' + Number(rate).toFixed(2) +
+                ' pour 1 000 habitants)';
+            }
+          });
+
+          popup += '<br><br>Source : SSMSI, ministère de l’Intérieur.';
+          popup += '<br>Les faits enregistrés ne représentent pas tous les risques.';
+          status = 'Données officielles 2025 — pas de score global';
+        }
+      }
+    } else {
+      popup += '<br><br>Les données françaises ne couvrent pas cette zone.';
+    }
+
+    window.worldMarker = L.marker([lat, lon])
+      .addTo(map)
+      .bindPopup(popup)
       .openPopup();
 
-    document.getElementById('cityName').textContent =
-      String(place.display_name || place.name || query).split(',')[0];
+    document.getElementById('cityName').textContent = cityName;
     document.getElementById('cityCountry').textContent =
-      String(place.display_name || 'Pays inconnu').split(',').slice(1).join(',').trim()
-  + ' — Score réel indisponible';
+      (address.country || 'Pays non précisé') + ' — ' + status;
     document.getElementById('score').textContent = '—';
+
   } catch (error) {
-    alert('La recherche a échoué. Vérifie ta connexion puis réessaie.');
+    console.error(error);
+    alert(
+      'La recherche ou le chargement des données a échoué. ' +
+      'Vérifie que le fichier JSON allégé est bien à la racine du dépôt GitHub.'
+    );
   } finally {
     if (go) go.textContent = 'Rechercher';
   }
 }
+
 
 </script></body></html>
