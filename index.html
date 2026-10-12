@@ -105,14 +105,36 @@ input {
   border-radius: 14px;
   box-shadow: 0 3px 12px rgba(30, 60, 80, 0.06);
 }
-</style></head>
+</style></style></head>
 <body><main class="wrap">
 <header class="top"><div class="brand">Safe<span>Atlas</span></div><div class="tag">PROTOTYPE — DONNÉES DE DÉMO</div></header>
 <p class="intro">Explorer la sécurité des villes • Indicateurs transparents • Sources à vérifier</p>
 <div class="warning"><strong>Important :</strong> les notes et événements affichés dans cette première maquette sont fictifs. Ils ne décrivent pas la dangerosité réelle des villes. Nous les remplacerons par des données sourcées avant toute publication publique.</div>
 <div class="controls"><input id="search" list="cities" placeholder="Rechercher une ville (ex. Paris, Alger, Tokyo)"><datalist id="cities"><option>Paris</option><option>Alger</option><option>Tokyo</option><option>New York</option><option>Marseille</option></datalist><button id="go">Rechercher</button></div>
 <div id="map" aria-label="Carte interactive du prototype"></div>
-<div class="grid"><section class="card"><div class="label">Ville sélectionnée</div><div class="city" id="cityName">Paris</div><div class="muted" id="cityCountry">France · exemple de démonstration</div></section><section class="card"><div class="label">Indice de démonstration</div><div class="score" id="score">4,2 <small>/ 10</small></div><div class="bar"><span id="bar" style="width:42%;background:#e6b94f"></span></div><p class="muted" id="scoreNote">Note fictive — aucun jugement réel sur la ville.</p></section><section class="card"><div class="label">Fiabilité des données</div><div class="score" style="font-size:24px">Non évaluée</div><p class="muted">Aucune source criminelle réelle n'est encore connectée.</p></section></div>
+<div class="grid"><section class="card"><div class="label">Ville sélectionnée</div><div class="city" id="cityName">Paris</div><div class="muted" id="cityCountry">France · exemple de démonstration</div></section>```html
+<section class="card indicators-summary">
+  <div class="label">DONNÉES OFFICIELLES</div>
+  <h2>Indicateurs de criminalité</h2>
+  <p class="muted">Données communales françaises 2025. Aucun score global n’est calculé.</p>
+  <div class="indicator-item">
+    <strong>Cambriolages de logement</strong>
+    <div class="muted">Consultez la carte pour les données de la commune recherchée.</div>
+  </div>
+  <div class="indicator-item">
+    <strong>Vols de véhicule</strong>
+    <div class="muted">Données officielles disponibles selon la commune.</div>
+  </div>
+  <div class="indicator-item">
+    <strong>Vols dans les véhicules</strong>
+    <div class="muted">Données officielles disponibles selon la commune.</div>
+  </div>
+  <div class="indicator-item">
+    <strong>Vols sans violence contre des personnes</strong>
+    <div class="muted">Données officielles disponibles selon la commune.</div>
+  </div>
+</section>
+```<section class="card"><div class="label">Fiabilité des données</div><div class="score" style="font-size:24px">Non évaluée</div><p class="muted">Aucune source criminelle réelle n'est encore connectée.</p></section></div>
 <section class="section card"><h2>Événements récents</h2><p class="muted">Exemples fictifs pour tester l'affichage. Aucun fait divers réel n'est rapporté ici.</p><div id="incidents"><div class="incident"><span class="pill">EXEMPLE</span><strong>Événement de démonstration</strong><div class="muted">Date fictive · lieu non confirmé · source non connectée</div></div><div class="incident"><span class="pill">À VÉRIFIER</span><strong>Aucune donnée réelle disponible</strong><div class="muted">Les incidents ne seront affichés qu'avec une source identifiable.</div></div></div></section>
 <p class="footer">Carte © OpenStreetMap contributors · Maquette non destinée à guider une décision de sécurité. Une absence de données ne signifie pas une absence de risque.</p>
 </main>
