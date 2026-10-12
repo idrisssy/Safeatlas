@@ -6,6 +6,47 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
 <style>
 :root{--bg:#0b1220;--panel:#121c2d;--line:#26354b;--text:#f3f6fb;--muted:#a8b5c8;--accent:#73e0b0}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.45 system-ui,-apple-system,Segoe UI,sans-serif}.wrap{max-width:1100px;margin:auto;padding:18px}.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}.brand{font-size:24px;font-weight:800;letter-spacing:-.7px}.brand span{color:var(--accent)}.tag{border:1px solid #80682b;color:#f6d782;background:#332b16;border-radius:99px;padding:6px 10px;font-size:12px}.intro{color:var(--muted);margin:6px 0 16px}.warning{background:#302619;border:1px solid #6d512b;color:#ffe2a6;border-radius:12px;padding:12px;margin:14px 0;font-size:13px}.controls{display:flex;gap:8px;margin:14px 0}.controls input{flex:1;min-width:0;background:var(--panel);border:1px solid var(--line);color:var(--text);padding:12px;border-radius:10px;font-size:15px}.controls button{background:var(--accent);color:#082015;border:0;border-radius:10px;padding:0 16px;font-weight:800}#map{height:360px;border-radius:16px;border:1px solid var(--line);overflow:hidden}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:14px}.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:15px;min-width:0}.label{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.7px}.score{font-size:34px;font-weight:850;margin:5px 0}.score small{font-size:14px;color:var(--muted);font-weight:500}.bar{height:7px;background:#28364a;border-radius:99px;overflow:hidden}.bar span{display:block;height:100%;border-radius:99px}.city{font-size:18px;font-weight:750;margin-bottom:4px}.muted{color:var(--muted);font-size:13px}.section{margin-top:20px}.section h2{font-size:18px;margin:0 0 10px}.incident{padding:11px 0;border-top:1px solid var(--line)}.incident:first-of-type{border-top:0}.pill{display:inline-block;border-radius:6px;padding:3px 7px;font-size:11px;background:#26364a;color:#c8d7eb;margin-right:5px}.footer{color:var(--muted);font-size:12px;margin:18px 0}.leaflet-popup-content-wrapper,.leaflet-popup-tip{background:#121c2d;color:#f3f6fb}.leaflet-popup-content{margin:12px}.leaflet-control-attribution{font-size:10px!important}@media(max-width:700px){.grid{grid-template-columns:1fr}.wrap{padding:13px}#map{height:320px}.controls button{padding:0 12px}}
+
+
+/* SafeAtlas - design clair et minimaliste */
+body {
+  background: #f4f8fb;
+  color: #243447;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+h1, h2, h3 {
+  color: #174a6e;
+}
+
+button, input, select {
+  font: inherit;
+  border-radius: 10px;
+}
+
+button {
+  background: #167d70;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #116558;
+}
+
+input, select {
+  border: 1px solid #d5e1e8;
+  background: white;
+  color: #243447;
+  padding: 10px;
+}
+
+#map {
+  border-radius: 14px;
+  overflow: hidden;
+}
 </style></head>
 <body><main class="wrap">
 <header class="top"><div class="brand">Safe<span>Atlas</span></div><div class="tag">PROTOTYPE — DONNÉES DE DÉMO</div></header>
